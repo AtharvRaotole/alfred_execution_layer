@@ -76,9 +76,20 @@ export interface LLMResponse {
   flags: string[]; // e.g. ["contradiction_detected", "irreversible_action"]
 }
 
+// ─── Pipeline Step Trace ──────────────────────────────────────────────────────
+
+export interface PipelineStep {
+  name: string;
+  status: "completed" | "short_circuited" | "skipped" | "failed";
+  durationMs: number;
+}
+
 // ─── Final Pipeline Output ───────────────────────────────────────────────────
 
 export interface DecisionResult {
+  // Request tracking
+  requestId: string;
+
   // The final decision (may come from pre-filter or LLM)
   decision: DecisionOutcome;
   rationale: string;
@@ -95,5 +106,6 @@ export interface DecisionResult {
     failureMode?: "timeout" | "malformed_output" | "missing_context" | null;
     fallbackApplied: boolean; // True if default safe behavior was used
     durationMs: number; // Total pipeline execution time
+    pipelineSteps: PipelineStep[]; // Step-by-step trace for visualization
   };
 }
